@@ -70,6 +70,7 @@ const createURL = async function (req, res) {
         //console.log(data)
 
         const createUrl = await urlModel.create(data)
+
         res.send({ status: true, data: data })
     }
 
@@ -90,11 +91,11 @@ const getUrl = async function (req, res){
             res.status(302).redirect(getUrlCachedData)
         }
         else{
-            let url = await urlModel.findOne({urlCode : urlCode});
+            let url = await urlModel.findOne({urlCode : urlCode}).select({_id : 0, longUrl : 1});
             if(!url){
                 return res.status(404).send({status : false, message : 'No data found with this url'})
             }
-            await SET_ASYNC(`${urlCode}`, JSON.stringify(url))
+            await SET_ASYNC(`${urlCode}`, JSON.stringify(url.longUrl), 'EX', 60)
             res.status(302).redirect(url.longUrl);
         }
     }
