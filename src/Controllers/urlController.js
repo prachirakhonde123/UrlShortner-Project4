@@ -51,28 +51,37 @@ const createURL = async function (req, res) {
 
             if (!validurl.isWebUri(longUrl)) return res.status(400).send({ status: false, message: "Your Url is Invalid. Please Provide Valid LongUrl" })
         }
+        
+        
+        let cache = await GET_ASYNC(`${longUrl}`)
+        if(cache){
+            //console.log("Data from Redis")
+            cache = JSON.parse(cache)
+            return res.status(400).send({status : false, message: "Data from Cache", data : cache})
 
-        const duplicateUrl = await urlModel.findOne({ longUrl: longUrl })
+        }
+
+
+        const duplicateUrl = await urlModel.findOne({ longUrl: longUrl }).select({_id : 0, longUrl : 1, shortUrl : 1, urlCode : 1})
         if (duplicateUrl) {
-            return res.status(400).send({ status: true, message: "LongUrl is already Used" })
+            //new
+            await SET_ASYNC(`${longUrl}`, JSON.stringify(duplicateUrl), 'EX', 60*2)
+            return res.status(400).send({ status: true, message: "LongUrl is already Used", data : duplicateUrl })
         }
 
         const codeUrl = shortid.generate(longUrl).toLowerCase()  // shortcode is generated
         const shortUrl = baseURL + "/" + codeUrl     // shortUrl created
 
-        const duplicateShortUrl = await urlModel.findOne({ shortUrl: shortUrl })
-        if (duplicateShortUrl) {
-            return res.status(400).send({ status: false, message: "ShortUrl is already exist !" })
-        }
 
         data["urlCode"] = codeUrl
         data["shortUrl"] = shortUrl
-        //console.log(data)
 
         const createUrl = await urlModel.create(data)
-
+        //await SET_ASYNC(`${longUrl}`, JSON.stringify(createUrl), 'EX', 60*2)
         res.send({ status: true, data: data })
     }
+
+
 
     catch (err) {
         res.status(500).send({ status: false, message: err.message })
@@ -88,6 +97,7 @@ const getUrl = async function (req, res){
         let urlCode = req.params.urlCode
         let getUrlCachedData = await GET_ASYNC(`${urlCode}`)
         if(getUrlCachedData){
+            console.log("Data from Redis")
             res.status(302).redirect(getUrlCachedData)
         }
         else{
@@ -95,7 +105,8 @@ const getUrl = async function (req, res){
             if(!url){
                 return res.status(404).send({status : false, message : 'No data found with this url'})
             }
-            await SET_ASYNC(`${urlCode}`, JSON.stringify(url.longUrl), 'EX', 60)
+            await SET_ASYNC(`${urlCode}`, JSON.stringify(url.longUrl), 'EX' , 60)
+            console.log("Fetching Data from DB")
             res.status(302).redirect(url.longUrl);
         }
     }
