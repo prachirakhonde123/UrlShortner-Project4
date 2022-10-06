@@ -21,7 +21,7 @@ const urlSchema = new mongoose.Schema({
         required : true,
         unique : true,
         trim : true,
-        default : shortid.generate
+        //default : shortid.generate
     }
 
 
