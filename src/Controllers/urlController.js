@@ -36,7 +36,7 @@ const createURL = async function (req, res) {
         const { longUrl } = data
 
         //let urlRegex =  "((http|https)://)(www.)?" + "[a-zA-Z0-9@:%._\\+~#?&//=]{2,256}\\.[a-z]"+ "{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)"
-
+        
         
         //______________________If body is Empty__________________________________________________
         if (!isValidBody(data)) {
@@ -65,17 +65,17 @@ const createURL = async function (req, res) {
         }
 
         
-        // if(longUrl){
-        //     var validLink = false
-        //     await axios.get(longUrl)
-        //     .then((res)=>{
-        //         if (res.status == 200 || res.status == 201)
-        //         validLink = true; 
-        //     })
-        //     .catch((error) => { validLink = false })
-        //     if(validLink==false)
-        //     return res.status(400).send({ status: false, message: "invalid url please enter valid url!!" })
-        // }
+        if(longUrl){
+            var validLink = false
+            await axios.get(longUrl)
+            .then((res)=>{
+                if (res.status == 200 || res.status == 201)
+                validLink = true; 
+            })
+            .catch((error) => { validLink = false })
+            if(validLink==false)
+            return res.status(400).send({ status: false, message: "invalid url please enter valid url!!" })
+        }
 
         // let abc = await axios.get(longUrl)
         // .then(()=>longUrl)
@@ -136,14 +136,11 @@ const getUrl = async function (req, res){
         //_______________________fetching data from cache_________________________________________________
         let getUrlCachedData = await GET_ASYNC(`${urlCode}`)
         if(getUrlCachedData){
+            const longUrl = JSON.parse(getUrlCachedData)
             console.log("Data from Redis")
-            res.status(302).redirect(getUrlCachedData)
+            return res.status(302).redirect(longUrl)
         }
-        // let cachedURLCode = await GET_ASYNC(`${urlCode}`)
-        // if (cachedURLCode) {
-        //     return res.status(302).redirect(cachedURLCode)
-        // }
-        
+               
         else{
             let url = await urlModel.findOne({urlCode : urlCode})
             //____________________If urlcode does not exist______________________________________________
