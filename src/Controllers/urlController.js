@@ -47,7 +47,8 @@ const createURL = async function (req, res) {
         if (Object.keys(data).length !== 1) {
             return res.status(400).send({ status: false, message: "Body can contain only one key and i.e longUrl" })
         }
-
+        
+        if(!isValid(longUrl)) return res.status(400).send({status : false, message : "Url can't be empty! Invalid format of url"})
 
         //______________________LongUrl validations using regex___________________________________________________
 
