@@ -114,7 +114,7 @@ const getUrl = async function (req, res) {
         let urlCode = req.params.urlCode
 
         if (!shortid.isValid(urlCode)) {
-            return res.status(400).send({ status: false, message: "Sorry! Wrong urlCode. Provide valid UrlCode" })
+            return res.status(404).send({ status: false, message: "Sorry! Wrong urlCode. Provide valid UrlCode" })
         }
 
         //_______________________fetching data from cache_________________________________________________
