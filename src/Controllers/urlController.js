@@ -62,19 +62,6 @@ const createURL = async function (req, res) {
                 .send({ status: false, msg: "Please Enter a valid URL." });
         }
 
-
-        // if(longUrl){
-        //     var validLink = false
-        //     await axios.get(longUrl)
-        //     .then((res)=>{
-        //         if (res.status == 200 || res.status == 201)
-        //         validLink = true; 
-        //     })
-        //     .catch((error) => { validLink = false })
-        //     if(validLink==false)
-        //     return res.status(400).send({ status: false, message: "Invalid url or may be Private Url. Please enter valid and public url!!" })
-        // }
-
         
         //_______________________Cache_______________________________________________________________
         let cache = await GET_ASYNC(`${longUrl}`)
