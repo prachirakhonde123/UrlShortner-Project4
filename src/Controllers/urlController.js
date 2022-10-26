@@ -40,7 +40,7 @@ const createURL = async function (req, res) {
 
         //_________________________If longUrl is not given_________________________________________
         if (!longUrl) {
-            return res.status(400).send({ status: false, message: "LongUrl can't be empty" })
+            return res.status(400).send({ status: false, message: "LongUrl is mandatory" })
         }
 
         //_______________________If body contains extra keys____________________________________________
