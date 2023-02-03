@@ -10,12 +10,12 @@ const { url } = require('inspector');
 
 //_________________________________Connected with Redis__________________________
 const redisClient = redis.createClient(
-    11198,              //Port Number
-    "redis-11198.c212.ap-south-1-1.ec2.cloud.redislabs.com",   // End Point
+    11701,              //Port Number
+    "redis-11701.c305.ap-south-1-1.ec2.cloud.redislabs.com",   // End Point
     { no_ready_check: true }
 );
 
-redisClient.auth("hqVpSUsiDhL73AKLBcQCRWEBp8MFHWh7", function (err) {     //Password of redis
+redisClient.auth("TlXIEbdEsErG0pa4rf5KAKKfqCcVDHTv", function (err) {     //Password of redis
     if (err) throw err;
 });
 
@@ -100,10 +100,6 @@ const getUrl = async function (req, res) {
     try {
         let urlCode = req.params.urlCode
 
-        if (!shortid.isValid(urlCode)) {
-            return res.status(404).send({ status: false, message: "Sorry! Wrong urlCode. Provide valid UrlCode" })
-        }
-
         //_______________________fetching data from cache_________________________________________________
         let getUrlCachedData = await GET_ASYNC(`${urlCode}`)
         if (getUrlCachedData) {
@@ -116,7 +112,7 @@ const getUrl = async function (req, res) {
             let url = await urlModel.findOne({ urlCode: urlCode })
             //____________________If urlcode does not exist______________________________________________
             if (!url) {
-                return res.status(404).send({ status: false, message: `No data found with urlCode: ${urlCode}` })
+                return res.status(404).send({ status: false, message: `No data found with urlCode: ${urlCode} or URL Code is Wrong`  })
             }
 
             //________________________Setting urlcode in cache_______________________________________________
